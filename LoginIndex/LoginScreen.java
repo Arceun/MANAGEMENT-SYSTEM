@@ -15,32 +15,30 @@ import java.net.URL;
 
 public class LoginScreen extends JFrame {
 
-    // Database credentials
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/memistore";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/memistore"; 
+    private static final String DB_USER = "root"; 
+    private static final String DB_PASSWORD = ""; 
 
     // GUI components for Login Panel
-    private JTextField usernameField;
-    private JPasswordField passwordField;
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
     private JButton loginButton;
-    private JLabel messageLabel;
+    private final JLabel messageLabel;
 
     // Panels for switching views
-    private JPanel bootUpPanel;
-    private JPanel loginPanel;
+    private final JPanel bootUpPanel;
+    private final JPanel loginPanel;
 
     private static final String BOOTUP_IMAGE_PATH = "/images/CollarWithNameColor.png";
-    private static final String LOGIN_HEADER_IMAGE_PATH = "/images/CollarWithNameColor.png"; // Still needed for the login form image
+    private static final String LOGIN_HEADER_IMAGE_PATH = "/images/CollarWithNameColor.png";
 
-    /**
-     * Constructor for the LoginScreen class.
-     * Initializes the GUI components and sets up the layout.
-     */
+    
     public LoginScreen() {
+        System.out.println("--- LoginScreen constructor started ---"); 
+
         // Set up the JFrame (window) properties
-        setTitle("Memi's Treats - Inventory Management System"); // Window title
-        setSize(900, 650); // Set window size to 900x600
+        setTitle("Memi's Treats - Inventory Management System"); 
+        setSize(900, 650); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close operation
         setLocationRelativeTo(null); // Center the window on the screen
         setResizable(false); // Prevent resizing for a fixed layout
@@ -50,20 +48,21 @@ public class LoginScreen extends JFrame {
 
         // --- Create the Boot Up Panel with an image background ---
         Image bootUpBgImage = loadImage(BOOTUP_IMAGE_PATH);
-        bootUpPanel = new ImagePanel(bootUpBgImage); // Use the custom ImagePanel
-        bootUpPanel.setLayout(new BorderLayout()); // Set layout for components on top of image
-        bootUpPanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20)); // Padding
+        bootUpPanel = new ImagePanel(bootUpBgImage); 
+        bootUpPanel.setLayout(new BorderLayout()); 
+        bootUpPanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20)); 
 
         // Add a message for user interaction
         JLabel instructionLabel = new JLabel("Click anywhere or press any key to continue...", SwingConstants.CENTER);
         instructionLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-        instructionLabel.setForeground(new Color(255, 255, 255));
+        instructionLabel.setForeground(new Color(0, 0, 0));
         bootUpPanel.add(instructionLabel, BorderLayout.SOUTH);
 
         // Add mouse listener to transition to login screen on click
         bootUpPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                System.out.println("BootUpPanel clicked!"); // Debug print
                 showLoginPanel();
             }
         });
@@ -72,6 +71,7 @@ public class LoginScreen extends JFrame {
         bootUpPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                System.out.println("BootUpPanel key pressed!"); // Debug print
                 showLoginPanel();
             }
         });
@@ -80,25 +80,22 @@ public class LoginScreen extends JFrame {
 
         // --- Create the Login Panel ---
         loginPanel = new JPanel(new BorderLayout());
-        loginPanel.setBackground(new Color(255, 224, 160)); // Set background for the overall login panel
+        loginPanel.setBackground(new Color(255, 224, 160));
 
         // Login Form Panel (for image, username, password, and button)
         JPanel loginFormPanel = new JPanel(new GridBagLayout());
-        loginFormPanel.setBackground(new Color(255, 224, 160)); 
-        loginFormPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); // Padding
+        loginFormPanel.setBackground(new Color(255, 224, 160));
+        loginFormPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); 
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 5, 10, 5); // Padding between components
-        // gbc.fill is intentionally NOT set here, so default behavior is NONE,
-        // preventing stretching unless explicitly specified per component.
+        gbc.insets = new Insets(10, 5, 10, 5); 
 
 
         // --- Add the image directly to the loginFormPanel ---
         Image loginHeaderImage = loadImage(LOGIN_HEADER_IMAGE_PATH);
         if (loginHeaderImage != null) {
             ImageIcon loginImageRawIcon = new ImageIcon(loginHeaderImage);
-            // Manually adjust the size of the image
-            Image scaledImage = loginImageRawIcon.getImage().getScaledInstance(500, 350, Image.SCALE_SMOOTH); // Adjust size manually here
+            Image scaledImage = loginImageRawIcon.getImage().getScaledInstance(500, 350, Image.SCALE_SMOOTH); 
             ImageIcon scaledLoginIcon = new ImageIcon(scaledImage);
 
             JLabel loginImageLabel = new JLabel(scaledLoginIcon);
@@ -106,74 +103,111 @@ public class LoginScreen extends JFrame {
             gbc.gridy = 0; // Row 0
             gbc.gridwidth = 2; // Span across 2 columns
             gbc.anchor = GridBagConstraints.CENTER; // Center the image
+            gbc.weightx = 0.0; 
+            gbc.fill = GridBagConstraints.NONE; // Keep image from stretching
             loginFormPanel.add(loginImageLabel, gbc);
         } else {
             System.err.println("Login header image not found, defaulting to text label.");
-            // If image not found, you could add a text label here as a fallback if desired
-            // JLabel fallbackLabel = new JLabel("Login Panel", SwingConstants.CENTER);
-            // fallbackLabel.setFont(new Font("Arial", Font.BOLD, 24));
-            // gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
-            // loginFormPanel.add(fallbackLabel, gbc);
+            // Fallback if image not found, added for robustness
+            JLabel fallbackLabel = new JLabel("Login Panel", SwingConstants.CENTER);
+            fallbackLabel.setFont(new Font("Arial", Font.BOLD, 24));
+            gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+            loginFormPanel.add(fallbackLabel, gbc);
         }
 
 
         // Username Label
         gbc.gridx = 0; // Column 0
-        gbc.gridy = 1; // Row 1 (shifted down by 1 for the image)
-        gbc.gridwidth = 1; // Keep 1 for label
-        gbc.fill = GridBagConstraints.NONE; // Explicitly set to NONE for labels
-        gbc.anchor = GridBagConstraints.EAST; // Align to left
-        gbc.weightx = 0.0;
+        gbc.gridy = 1; // Row 1 
+        gbc.gridwidth = 1; // Label takes 1 column
+        gbc.fill = GridBagConstraints.NONE; 
+        gbc.anchor = GridBagConstraints.EAST; 
+        gbc.weightx = 0.0; 
         loginFormPanel.add(new JLabel("Username:"), gbc);
 
         // Username Text Field
         gbc.gridx = 1; // Column 1
         gbc.gridy = 1; // Row 1
-        gbc.gridwidth = 1; // Keep 1 for text field
-        gbc.weightx = 0.0; // Give horizontal space to this column
-        gbc.fill = GridBagConstraints.HORIZONTAL; // Allow text field to fill its column
-        loginFormPanel.add(usernameField = new JTextField(20), gbc);
+        gbc.gridwidth = 1; // Text field takes 1 column
+        gbc.weightx = 0.0; 
+        gbc.fill = GridBagConstraints.HORIZONTAL; 
+        usernameField = new JTextField(20); 
+        loginFormPanel.add(usernameField, gbc);
 
         // Password Label
         gbc.gridx = 0; // Column 0
         gbc.gridy = 2; // Row 2 (shifted down by 1)
-        gbc.gridwidth = 1; // Keep 1 for label
-        gbc.fill = GridBagConstraints.NONE; // Explicitly set to NONE for labels
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.weightx = 0.0;
+        gbc.gridwidth = 1; // Label takes 1 column
+        gbc.fill = GridBagConstraints.NONE; // Label itself doesn't stretch
+        gbc.anchor = GridBagConstraints.EAST; 
+        gbc.weightx = 0.0; 
         loginFormPanel.add(new JLabel("Password:"), gbc);
 
         // Password Text Field
         gbc.gridx = 1; // Column 1
         gbc.gridy = 2; // Row 2
-        gbc.gridwidth = 1; // Keep 1 for text field
-        gbc.weightx = 0.0; // Give horizontal space to this column
-        gbc.fill = GridBagConstraints.HORIZONTAL; // Allow text field to fill its column
-        loginFormPanel.add(passwordField = new JPasswordField(20), gbc);
+        gbc.gridwidth = 1; // Text field takes 1 column
+        gbc.weightx = 0.0; 
+        gbc.fill = GridBagConstraints.HORIZONTAL; 
+        passwordField = new JPasswordField(20);
+        loginFormPanel.add(passwordField, gbc);
 
         // Login Button
         gbc.gridx = 0; // Column 0
         gbc.gridy = 3; // Row 3 (shifted down by 1)
         gbc.gridwidth = 2; // Span across 2 columns (for centering)
         gbc.anchor = GridBagConstraints.CENTER; // Center the button
-        gbc.fill = GridBagConstraints.NONE; // Explicitly set to NONE for the button (to respect preferred size)
+        gbc.fill = GridBagConstraints.NONE; // Button itself doesn't stretch
+        gbc.weightx = 0.0; 
         loginButton = new JButton("Login");
-        loginButton.setFont(new Font("Arial", Font.BOLD, 14)); // Bold font for button
-        loginButton.setBackground(new Color(60, 179, 113)); // Medium Sea Green
-        loginButton.setForeground(Color.WHITE); // White text
+        loginButton.setFont(new Font("Arial", Font.BOLD, 14)); 
+        loginButton.setBackground(new Color(255, 255, 255));
+        loginButton.setForeground(Color.BLACK); 
         loginButton.setFocusPainted(false); // Remove focus border
-        loginButton.setBorder(BorderFactory.createLineBorder(new Color(46, 139, 87), 2)); // Darker border
-        loginButton.setPreferredSize(new Dimension(100, 35)); // Fixed size
+        loginButton.setBorder(BorderFactory.createLineBorder(new Color(46, 139, 87), 2)); 
+        loginButton.setPreferredSize(new Dimension(100, 35)); 
         loginFormPanel.add(loginButton, gbc);
 
-        // Message Label (for displaying success/error messages)
+
+        // --- Place the action listener right after button initialization ---
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Login button clicked - Action Listener Fired!"); 
+                authenticateUser();
+            }
+        });
+
+        // --- Add KeyListener to the password field ---
+        passwordField.addKeyListener(new KeyAdapter() { 
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // When the Enter key is pressed
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    loginButton.doClick(); 
+                }
+            }
+        });
+
+        usernameField.addKeyListener(new KeyAdapter() { 
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    passwordField.requestFocusInWindow(); 
+                }
+            }
+        });
+
+        // Message Label 
         gbc.gridx = 0; // Column 0
         gbc.gridy = 4; // Row 4 (shifted down by 1)
         gbc.gridwidth = 2; // Span across 2 columns
-        gbc.fill = GridBagConstraints.NONE; // Explicitly set to NONE for the message label
+        gbc.fill = GridBagConstraints.NONE; 
+        gbc.weightx = 0.0;
         messageLabel = new JLabel("", SwingConstants.CENTER); // Center text
-        messageLabel.setForeground(Color.RED); // Default to red for errors
+        messageLabel.setForeground(Color.RED); 
         loginFormPanel.add(messageLabel, gbc);
+
 
         // Add the loginFormPanel to the center of the loginPanel
         loginPanel.add(loginFormPanel, BorderLayout.CENTER);
@@ -188,13 +222,9 @@ public class LoginScreen extends JFrame {
 
         // Request focus for the bootUpPanel so key events are captured immediately
         bootUpPanel.requestFocusInWindow();
+        System.out.println("--- LoginScreen constructor finished ---");
     }
 
-    /**
-     * Helper method to load an image from a given path.
-     * @param path The path to the image resource.
-     * @return The loaded Image object, or null if not found.
-     */
     private Image loadImage(String path) {
         URL imageUrl = getClass().getResource(path);
         if (imageUrl != null) {
@@ -205,60 +235,68 @@ public class LoginScreen extends JFrame {
         }
     }
 
-    /**
-     * Shows the login panel and hides the boot up panel.
-     */
+    /* Shows the login panel and hides the boot up panel. */
     private void showLoginPanel() {
         CardLayout cl = (CardLayout)(this.getContentPane().getLayout());
         cl.show(this.getContentPane(), "Login");
-        usernameField.requestFocusInWindow(); // Set focus to username field
+        usernameField.requestFocusInWindow(); 
+        System.out.println("--- Switched to Login Panel ---"); 
     }
 
     /**
      * Authenticates the user against the database.
      */
     private void authenticateUser() {
+        System.out.println("--- authenticateUser() called ---"); // Debug print
+
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
+            System.out.println("Username or password fields are empty."); // Debug print
             messageLabel.setText("Please enter both username and password.");
             messageLabel.setForeground(Color.RED);
             return;
         }
 
+        System.out.println("Attempting database connection..."); // Debug print
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            System.out.println("Database connection successful. Preparing statement."); // Debug print
             String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
 
+            System.out.println("Executing query: " + sql + " with username: " + username + " and password: " + password); // Debug print
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                System.out.println("Login successful in database. Redirecting to dashboard."); // Debug print
                 messageLabel.setText("Login Successful! Redirecting to dashboard...");
                 messageLabel.setForeground(new Color(34, 139, 34));
                 JOptionPane.showMessageDialog(this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                // In a real application, you would dispose of this window and open the main dashboard
-                // For example:
-                // dispose();
-                // new InventoryDashboard().setVisible(true);
+                
+                // --- REDIRECTION TO DASHBOARD ---
+                dispose(); // Close the current LoginScreen window
+                new InventoryDashboard().setVisible(true); // Open the new InventoryDashboard
+                // --- END REDIRECTION ---
+
             } else {
+                System.out.println("Login failed: Invalid credentials."); // Debug print
                 messageLabel.setText("Invalid username or password.");
                 messageLabel.setForeground(Color.RED);
             }
         } catch (SQLException ex) {
+            System.err.println("SQLException caught: " + ex.getMessage()); // Debug print
             messageLabel.setText("Database error: " + ex.getMessage());
             messageLabel.setForeground(Color.RED);
             ex.printStackTrace();
         }
+        System.out.println("--- End of authenticateUser() ---"); // Debug print
     }
 
-    /**
-     * Main method to run the application.
-     * @param args Command line arguments (not used).
-     */
     public static void main(String[] args) {
+        System.out.println("--- Main method started ---"); // Debug print
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -267,22 +305,12 @@ public class LoginScreen extends JFrame {
         });
     }
 
-    /**
-     * Inner class to create a JPanel that paints an image as its background.
-     */
     class ImagePanel extends JPanel {
         private Image image;
 
         public ImagePanel(Image image) {
             this.image = image;
-            // Ensure the panel is opaque so the background image is drawn
-            setOpaque(false);
-            // Set preferred size for consistency, if the image has a preferred size
-            // If the image is meant to fill, this might not be needed or will be overridden by layout
-            if (image != null) {
-                // Adjust for actual image dimensions, or set a fixed preferred size
-                // Example: setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
-            }
+            setOpaque(false); 
         }
 
         @Override
